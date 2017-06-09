@@ -21,7 +21,9 @@
   },
   "homepage": "https://github.com/max-crow/rtbkit-js",
   "devDependencies": {
-    "chai": "^4.0.2"
+    "body-parser": "^1.17.2",
+    "chai": "^4.0.2",
+    "chai-as-promised": "^6.0.0"
   },
   "dependencies": {
     "express": "^4.15.3"

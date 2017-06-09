@@ -26,7 +26,7 @@ describe ('Mockup', function () {
     });
 
     after(function () {
-        //mockup.stop();
+        mockup.stop();
     });
 
     describe ('#ACS', function () {
@@ -39,7 +39,7 @@ describe ('Mockup', function () {
         };
 
         describe ('.getAgents', function () {
-            it('should return a JSON array', (done) => {
+            it('should return a JSON array', function(done) {
                 get('/v1/agents/', function (res) {
                     expect(res.statusCode).to.equal(200);
                     let agents = JSON.parse(res.data);
