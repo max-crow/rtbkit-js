@@ -10,24 +10,27 @@ const chai = require('chai')
     , expect = chai.expect
     , should = chai.should()
 ;
+const chaiAsPromised = require("chai-as-promised"); 
+chai.use(chaiAsPromised);
 
-//var chaiAsPromised = require("chai-as-promised");
-
-const mockup = require('../lib/mockup')();
-const rtbkit = require('../lib/rtbkit.js').instance('127.0.0.1');
+const mockupServer = require('../lib/mockup')();
+const rtbkit = require('../lib/rtbkit.js')
+    , mockup = rtbkit.instance('127.0.0.1')
+    , spawn = rtbkit.spawn
+;
 
 describe ('RTBkit', function () {
     before(function() {
-        mockup.start();
+        mockupServer.start();
     });
 
     after(function() {
-        mockup.stop();
+        mockupServer.stop();
     });
     describe('#Agent Config Service', function() {
         describe ('.getAgents()', function() {
-            it('should return a JSON array', function(done) {
-                rtbkit.acs.getAgents(function(res) {
+            it('should return a JSON array (async)', function(done) {
+                mockup.acs.getAgents(function(res) {
                     expect(res.statusCode).to.equal(200);
                     let agents = JSON.parse(res.data);
                     expect(agents).to.be.an('Array');
@@ -35,6 +38,20 @@ describe ('RTBkit', function () {
                 }).on('error', function(e) {
                     should.not.exist(error);
                     done(error);
+                });
+            });
+            it('should return a JSON array (Promise)', function(done) {
+                spawn(function* () {
+                    try {
+                        let res = yield mockup.acs.getAgents();
+                        expect(res).to.have.a.property('statusCode', 200)
+                        expect(res).to.have.a.property('data');
+                        let agents = JSON.parse(res.data);
+                        expect(agents).to.be.an('Array');
+                        done();
+                    } catch (err) {
+                        done(err);
+                    }
                 });
             });
         });
