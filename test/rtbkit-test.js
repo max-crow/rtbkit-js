@@ -10,8 +10,8 @@ const chai = require('chai')
     , expect = chai.expect
     , should = chai.should()
 ;
-const chaiAsPromised = require("chai-as-promised"); 
-chai.use(chaiAsPromised);
+//const chaiAsPromised = require("chai-as-promised"); 
+//chai.use(chaiAsPromised);
 
 const mockupServer = require('../lib/mockup')();
 const rtbkit = require('../lib/rtbkit.js')

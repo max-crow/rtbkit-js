@@ -4,7 +4,7 @@
   "description": "Access RTBkit APIs easily with Node.js",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha"
   },
   "repository": {
     "type": "git",
@@ -22,8 +22,7 @@
   "homepage": "https://github.com/max-crow/rtbkit-js",
   "devDependencies": {
     "body-parser": "^1.17.2",
-    "chai": "^4.0.2",
-    "chai-as-promised": "^6.0.0"
+    "chai": "^4.0.2"
   },
   "dependencies": {
     "express": "^4.15.3"
