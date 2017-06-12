@@ -12,7 +12,7 @@ const chai = require('chai')
     , assert = chai.assert
 ;
 const http = require('http');
-const Mockup = require('../lib/mockup.js');
+const mockup = require('../lib/mockup.js')();
 
 var conf = {
     ports: {
@@ -21,7 +21,6 @@ var conf = {
 };
 
 describe ('Mockup', function () {
-    var mockup = Mockup();
     before(function () {
         mockup.start();
     });
@@ -38,21 +37,6 @@ describe ('Mockup', function () {
         function post(path, data, callback) {
             return send('POST', conf.ports.acs, path, data, callback);
         };
-
-        // describe ('- methodName', function () {
-        //     it('methods should return their names in header', function(done) {
-        //         get('/v1/agents/', function (res) {
-        //             expect(res.statusCode).to.equal(200);
-        //             let agents = JSON.parse(res.data);
-        //             expect(agents).to.be.an('Array');
-        //             done();
-        //         }).on('error', function (error) {
-        //             should.not.exist(error);
-        //             done(error);
-        //         });
-
-        //     });
-        // });
 
         describe ('.getAgents', function () {
             it('should return a JSON array', function(done) {
