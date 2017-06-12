@@ -14,7 +14,7 @@ const chai = require('chai')
 //chai.use(chaiAsPromised);
 
 const mockupServer = require('../lib/mockup')();
-const rtbkit = require('../lib/rtbkit.js')
+const rtbkit = require('../index.js')
     , mockup = rtbkit.instance('127.0.0.1')
     , spawn = rtbkit.spawn
 ;
