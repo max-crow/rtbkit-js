@@ -9,6 +9,7 @@
 const chai = require('chai')
     , expect = chai.expect
     , should = chai.should()
+    , assert = chai.assert
 ;
 const http = require('http');
 const Mockup = require('../lib/mockup.js');
@@ -34,13 +35,29 @@ describe ('Mockup', function () {
             return send('GET', conf.ports.acs, path, '', callback);
         };
 
-        function post(port, path, data, callback) {
+        function post(path, data, callback) {
             return send('POST', conf.ports.acs, path, data, callback);
         };
+
+        // describe ('- methodName', function () {
+        //     it('methods should return their names in header', function(done) {
+        //         get('/v1/agents/', function (res) {
+        //             expect(res.statusCode).to.equal(200);
+        //             let agents = JSON.parse(res.data);
+        //             expect(agents).to.be.an('Array');
+        //             done();
+        //         }).on('error', function (error) {
+        //             should.not.exist(error);
+        //             done(error);
+        //         });
+
+        //     });
+        // });
 
         describe ('.getAgents', function () {
             it('should return a JSON array', function(done) {
                 get('/v1/agents/', function (res) {
+                    expect(res.headers).to.include.key({'method-name': 'getAgents'});
                     expect(res.statusCode).to.equal(200);
                     let agents = JSON.parse(res.data);
                     expect(agents).to.be.an('Array');
@@ -52,6 +69,43 @@ describe ('Mockup', function () {
 
             });
         });
+
+        describe ('.getAgentConfig', function () {
+            it('should return an object', function(done) {
+                var agent = 'test-agent';
+                get(`/v1/agents/${agent}/config`, function (res) {
+                    expect(res.statusCode).to.equal(200);
+                    expect(res.headers).to.include.key({'method-name': 'getAgentConfig'});
+                    expect(res.headers).to.include.key({'agent': agent});
+                    let config = JSON.parse(res.data);
+                    assert(typeof config === 'object', 'config should be an object or null');
+                    done();
+                }).on('error', function (error) {
+                    should.not.exist(error);
+                    done(error);
+                });
+
+            });
+        });
+
+        describe ('.setAgentConfig', function () {
+            it('should return HTTP 200', function(done) {
+                var agent = 'test-agent';
+                var config = JSON.stringify({ account: ['hello', 'world'] });
+                post(`/v1/agents/${agent}/config`, config, function (res) {
+                    expect(res.statusCode).to.equal(200);
+                    expect(res.headers).to.include.key({'method-name': 'setAgentConfig'});
+                    expect(res.headers).to.include.key({'agent': agent});
+                    expect(res.headers).to.include.key({'config': config});
+                    done();
+                }).on('error', function (error) {
+                    should.not.exist(error);
+                    done(error);
+                });
+
+            });
+        });
+
     });
 });
 

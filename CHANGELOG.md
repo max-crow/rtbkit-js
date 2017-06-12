@@ -5,6 +5,8 @@
 ### Added
 #### Agent Configuration Service
 * getAgents
+* getAgentConfig
+* setAgentConfig
 
 #### Promise
 * Functions return [Promises] when the callback is no specified.

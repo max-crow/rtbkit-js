@@ -29,9 +29,10 @@ describe ('RTBkit', function () {
     });
     describe('#Agent Config Service', function() {
         describe ('.getAgents()', function() {
-            it('should return a JSON array (async)', function(done) {
+            it('should return a JSON array (callback)', function(done) {
                 mockup.acs.getAgents(function(res) {
-                    expect(res.statusCode).to.equal(200);
+                    expect(res).to.have.a.property('statusCode', 200)
+                    expect(res.headers).to.include.key({'method-name': 'getAgents'});
                     let agents = JSON.parse(res.data);
                     expect(agents).to.be.an('Array');
                     done();                
@@ -44,7 +45,7 @@ describe ('RTBkit', function () {
                 spawn(function* () {
                     try {
                         let res = yield mockup.acs.getAgents();
-                        expect(res).to.have.a.property('statusCode', 200)
+                        expect(res).to.have.a.property('statusCode', 200);
                         expect(res).to.have.a.property('data');
                         let agents = JSON.parse(res.data);
                         expect(agents).to.be.an('Array');
@@ -55,6 +56,61 @@ describe ('RTBkit', function () {
                 });
             });
         });
+
+        describe ('.getAgentConfig()', function() {
+            var agent = "test-agent";
+            it("Should invoke the proper Mockup's method (callback)", function(done) {
+                mockup.acs.getAgentConfig(agent, function(res) {
+                    expect(res).to.have.a.property('statusCode', 200);
+                    expect(res.headers).to.include.key({'method-name': 'getAgentConfig'});
+                    expect(res.headers).to.include.key({'agent': agent});
+                    done();                
+                }).on('error', function(e) {
+                    should.not.exist(error);
+                    done(error);
+                });
+            });
+            it("Should invoke the proper Mockup's method (Promise)", function(done) {
+                spawn(function* () {
+                    try {
+                        let res = yield mockup.acs.getAgentConfig(agent);
+                        expect(res).to.have.a.property('statusCode', 200);
+                        expect(res.headers).to.include.key({'method-name': 'getAgentConfig'});
+                        done();
+                    } catch (err) {
+                        done(err);
+                    }
+                });
+            });
+        });
+
+        describe ('.setAgentConfig()', function() {
+            var agent = 'test-agent';
+            var config = {};
+            it("Should invoke the proper Mockup's method (callback)", function(done) {
+                mockup.acs.setAgentConfig(agent, config, function(res) {
+                    expect(res.headers).to.include.key({'method-name': 'setAgentConfig'});
+                    expect(res).to.have.a.property('statusCode', 200)
+                    done();                
+                }).on('error', function(e) {
+                    should.not.exist(error);
+                    done(error);
+                });
+            });
+            it("Should invoke the proper Mockup's method (Promise)", function(done) {
+                spawn(function* () {
+                    try {
+                        let res = yield mockup.acs.setAgentConfig(agent, config);
+                        expect(res.headers).to.include.key({'method-name': 'setAgentConfig'});
+                        expect(res).to.have.a.property('statusCode', 200)
+                        done();
+                    } catch (err) {
+                        done(err);
+                    }
+                });
+            });
+        });
+
     });
 });
 
