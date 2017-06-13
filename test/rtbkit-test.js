@@ -356,6 +356,45 @@ describe ('RTBkit', function () {
                 });
             });
 
+            describe ('Account.close()', function() {
+                var accountName = 'hello:world';
+                it('should return HTTP 200 for a valid name (callback)', function(done) {
+                    mockup.banker.account(accountName).close(function(res) {
+                        expect(res).to.have.a.property('statusCode', 200)
+                        expect(res.headers).to.include.key({'method-name': 'banker.closeAccount'});
+                        expect(res.headers).to.include.key({'account-name': accountName});
+                        done();                
+                    }).on('error', function(err) {
+                        should.not.exist(err);
+                        done(err);
+                    });
+                });
+                it("Async/await: should call the proper Mockup's method", function(done) {
+                    !async function() {
+                        try {
+                            let res = await mockup.banker.account(accountName).close();
+                            expect(res).to.have.a.property('statusCode', 200);
+                            expect(res.headers).to.include.key({'method-name': 'banker.closeAccount'});
+                            done();
+                        } catch (err) {
+                            done(err);
+                        }
+                    }();
+                });
+                it('should return HTTP 400 for an invalid name', function(done) {
+                    accountName = "invalid:account";
+                    mockup.banker.account(accountName).close(function(res) {
+                        expect(res).to.have.a.property('statusCode', 400)
+                        expect(res.headers).to.include.key({'method-name': 'banker.closeAccount'});
+                        expect(res.headers).to.include.key({'account-name': accountName});
+                        done();                
+                    }).on('error', function(err) {
+                        should.not.exist(err);
+                        done(err);
+                    });
+                });
+            });
+
         });
 
     });

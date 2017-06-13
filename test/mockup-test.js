@@ -255,6 +255,34 @@ describe ('Mockup', function () {
                 })
             });
         });
+
+        describe ('.close()', function () {
+            it('should return HTTP 200 for an existing account', function(done) {
+                var name = 'hello:world';
+                get(`/v1/accounts/${name}/close`, function(res) {
+                    expect(res.statusCode).to.equal(200);
+                    expect(res.headers).to.include.key({'method-name': 'banker.closeAccount'});
+                    expect(res.headers).to.include.key({'account-name': name});
+                    done();
+                }).on('error', function(err) {
+                    should.not.exist(err);
+                    done(err);  
+                })
+            });
+            it('should return HTTP 400 for non-existing accounts', function(done) {
+                var name = 'invalid:account';
+                get(`/v1/accounts/${name}/close`, function(res) {
+                    expect(res.statusCode).to.equal(400);
+                    expect(res.headers).to.include.key({'method-name': 'banker.closeAccount'});
+                    expect(res.headers).to.include.key({'account-name': name});
+                    done();
+                }).on('error', function(err) {
+                    should.not.exist(err);
+                    done(err);  
+                })
+            });
+        });
+        
     });
     //----------------------------------------------------------------
 });
