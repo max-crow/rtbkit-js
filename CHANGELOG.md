@@ -4,7 +4,8 @@
 ## v0.1.0 (2017-06-10)  
 ### Added
 #### Agent Configuration Service
-* getAgents
+* agents()
+* agent(name)
 * getAgentConfig
 * setAgentConfig
 

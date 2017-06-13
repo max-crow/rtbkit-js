@@ -58,54 +58,71 @@ describe ('RTBkit', function () {
             });
         });
 
-        describe ('.getAgentConfig()', function() {
-            var agent = "test-agent";
-            it("Should invoke the proper Mockup's method (callback)", function(done) {
-                mockup.acs.getAgentConfig(agent, function(res) {
-                    expect(res).to.have.a.property('statusCode', 200);
-                    expect(res.headers).to.include.key({'method-name': 'getAgentConfig'});
-                    expect(res.headers).to.include.key({'agent': agent});
-                    done();                
-                }).on('error', function(err) {
-                    should.not.exist(err);
-                    done(err);
+        describe('## ACS.Agent', function() {
+            var agentPath = ["hello", "world"];
+            var agentName = agentPath.join(':');
+            describe('.agent()', function() {
+                it("Should return an object with the proper name (name as a string)", function() {
+                    var agent = mockup.acs.agent(agentName);
+                    expect(agent).to.be.an('object');
+                    expect(agent.name()).to.be.equal(agentName);
+                });
+                it("Should return an object with the proper name (name as an array of strings)", function() {
+                    var agent = mockup.acs.agent(agentPath);
+                    expect(agent).to.be.an('object');
+                    expect(agent.name()).to.be.equal(agentName);
                 });
             });
-            it("Promise: Should not raise any exceptions", function(done) {
-                spawn(function* () {
-                    try {
-                        let res = yield mockup.acs.getAgentConfig(agent);
-                        //expect(res).to.have.a.property('statusCode', 200);
-                        //expect(res.headers).to.include.key({'method-name': 'getAgentConfig'});
-                        done();
-                    } catch (err) {
-                        done(err);
-                    }
-                });
-            });
-        });
 
-        describe ('.setAgentConfig()', function() {
-            var agent = 'test-agent';
-            var config = {};
-            it("Should invoke the proper Mockup's method (callback)", function(done) {
-                mockup.acs.setAgentConfig(agent, config, function(res) {
-                    expect(res.headers).to.include.key({'method-name': 'setAgentConfig'});
-                    expect(res).to.have.a.property('statusCode', 200)
-                    done();                
-                }).on('error', function(err) {
-                    should.not.exist(err);
-                    done(err);
+            describe ('.getAgentConfig()', function() {
+                var agent = "test-agent";
+                it("Should invoke the proper Mockup's method (callback)", function(done) {
+                    mockup.acs.getAgentConfig(agent, function(res) {
+                        expect(res).to.have.a.property('statusCode', 200);
+                        expect(res.headers).to.include.key({'method-name': 'getAgentConfig'});
+                        expect(res.headers).to.include.key({'agent': agent});
+                        done();                
+                    }).on('error', function(err) {
+                        should.not.exist(err);
+                        done(err);
+                    });
+                });
+                it("Promise: Should not raise any exceptions", function(done) {
+                    spawn(function* () {
+                        try {
+                            let res = yield mockup.acs.agent(agent).config;
+                            //expect(res).to.have.a.property('statusCode', 200);
+                            //expect(res.headers).to.include.key({'method-name': 'getAgentConfig'});
+                            done();
+                        } catch (err) {
+                            done(err);
+                        }
+                    });
                 });
             });
-            it("Promise: Should not raise any exceptions", function(done) {
-                spawn(function* () {
-                    try {
-                        let res = yield mockup.acs.setAgentConfig(agent, config);
-                        done();
-                    } catch (err) {
+
+            describe ('.setAgentConfig()', function() {
+                var agent = 'test-agent';
+                var config = {};
+                it("Should invoke the proper Mockup's method (callback)", function(done) {
+                    mockup.acs.setAgentConfig(agent, config, function(res) {
+                        expect(res.headers).to.include.key({'method-name': 'setAgentConfig'});
+                        expect(res).to.have.a.property('statusCode', 200)
+                        done();                
+                    }).on('error', function(err) {
+                        should.not.exist(err);
                         done(err);
-                    }
+                    });
+                });
+                it("Promise: Should not raise any exceptions", function(done) {
+                    spawn(function* () {
+                        try {
+                            let res = yield mockup.acs.setAgentConfig(agent, config);
+                            done();
+                        } catch (err) {
+                            done(err);
+                        }
+                    });
                 });
             });
         });
