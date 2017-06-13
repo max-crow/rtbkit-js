@@ -34,7 +34,7 @@ describe ('RTBkit', function () {
                 mockup.acs.getAgents(function(res) {
                     expect(res).to.have.a.property('statusCode', 200)
                     expect(res.headers).to.include.key({'method-name': 'getAgents'});
-                    let agents = JSON.parse(res.data);
+                    let agents = (res.data);
                     expect(agents).to.be.an('Array');
                     done();                
                 }).on('error', function(err) {
@@ -48,7 +48,7 @@ describe ('RTBkit', function () {
                         let res = yield mockup.acs.getAgents();
                         expect(res).to.have.a.property('statusCode', 200);
                         expect(res).to.have.a.property('data');
-                        let agents = JSON.parse(res.data);
+                        let agents = (res.data);
                         expect(agents).to.be.an('Array');
                         done();
                     } catch (err) {
@@ -120,7 +120,7 @@ describe ('RTBkit', function () {
                 mockup.banker.ping(function(res) {
                     expect(res).to.have.a.property('statusCode', 200)
                     expect(res.headers).to.include.key({'method-name': 'banker.ping'});
-                    expect(res).to.have.a.property('data', '"pong"');
+                    expect(res).to.have.a.property('data', 'pong');
                     done();                
                 }).on('error', function(err) {
                     should.not.exist(err);
@@ -133,7 +133,7 @@ describe ('RTBkit', function () {
                         let res = await mockup.banker.ping();
                         expect(res).to.have.a.property('statusCode', 200);
                         expect(res.headers).to.include.key({'method-name': 'banker.ping'});
-                        expect(res).to.have.a.property('data', '"pong"');
+                        expect(res).to.have.a.property('data', 'pong');
                         done();
                     } catch (err) {
                         done(err);
@@ -148,7 +148,7 @@ describe ('RTBkit', function () {
                     expect(res).to.have.a.property('statusCode', 200)
                     expect(res.headers).to.include.key({'method-name': 'banker.summary'});
                     expect(res).to.have.a.property('data');
-                    let data = JSON.parse(res.data);
+                    let data = (res.data);
                     expect(data).to.be.an('object');
                     done();                
                 }).on('error', function(err) {
@@ -176,7 +176,7 @@ describe ('RTBkit', function () {
                     expect(res).to.have.a.property('statusCode', 200)
                     expect(res.headers).to.include.key({'method-name': 'banker.accounts'});
                     expect(res).to.have.a.property('data');
-                    let data = JSON.parse(res.data);
+                    let data = (res.data);
                     expect(data).to.be.an('array');
                     done();                
                 }).on('error', function(err) {
@@ -248,7 +248,7 @@ describe ('RTBkit', function () {
                         expect(res.headers).to.include.key({'method-name': 'banker.getAccountSummary'});
                         expect(res.headers).to.include.key({'account-name': accountName});
                         expect(res).to.have.a.property('data');
-                        let data = JSON.parse(res.data);
+                        let data = (res.data);
                         expect(data).to.be.an('object');
                         done();                
                     }).on('error', function(err) {
@@ -322,7 +322,7 @@ describe ('RTBkit', function () {
                         expect(res.headers).to.include.key({'account-name': accountName});
                         expect(res.headers).to.include.key({'depth': depth});
                         expect(res).to.have.a.property('data');
-                        let data = JSON.parse(res.data);
+                        let data = (res.data);
                         expect(data).to.be.an('object');
                         done();                
                     }).on('error', function(err) {

@@ -11,14 +11,9 @@ const chai = require('chai')
     , should = chai.should()
 ;
 
-//var chaiAsPromised = require("chai-as-promised");
-
-
 const app = require('express')();
 const bodyParser = require('body-parser');
-//const upload = require('multer')();
 
-//const mockup = require('../lib/mockup')();
 const apiFactory = require('../lib/api-factory.js');
 
 app.use(bodyParser.json())
@@ -71,10 +66,9 @@ describe ('API', function () {
             var body = JSON.stringify(test_obj);
             api.post(path, body, function(res) {
                 expect(res.statusCode).to.equal(200);
-                var data = JSON.parse(res.data);
+                var data = res.data;
                 expect(data).to.have.a.property('path', path)
                 expect(data).to.have.a.property('request', body);
-                //expect(JSON.stringify(JSON.parse(data.request))).to.be.equal(data);
                 done();
             }).on('error', function(error) {
                 should.not.exist(error);
@@ -86,9 +80,8 @@ describe ('API', function () {
             var body = test_obj;
             api.post(path, body, function(res) {
                 expect(res.statusCode).to.equal(200);
-                var data = JSON.parse(res.data);
+                var data = res.data;
                 expect(data).to.have.a.property('path', path)
-                //expect(data.path).to.be.equal();
                 expect(data).to.have.a.property('request', JSON.stringify(body));
                 done();
             }).on('error', function(error) {
@@ -113,7 +106,7 @@ function createTestApi(server) {
 
 
 app.get('', function(req, res) {
-    res.status(200).end('empty path test');
+    res.status(200).end('"empty path test"');
 });
 
 app.post('/v1/mock-api/', function(req, res) {
