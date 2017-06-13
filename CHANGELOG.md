@@ -16,7 +16,7 @@
 * account(name)
 * Account.balance(newValue)
 * Account.children()
-* close()
+* Account.close()
 
 #### Promise
 * Functions return [Promises] when the callback is no specified.
