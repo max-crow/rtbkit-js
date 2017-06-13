@@ -20,11 +20,15 @@ const PORT = 11000;
 const PATH = '/testing-path/'
 
 describe ('Mock API Application', function () {
-    var api = apiApp(function(app){
-        app.get(PATH, function(req, res) {
-            res.sendStatus(200);
+    var createApp = () => {
+        return apiApp(function(app){
+            app.get(PATH, function(req, res) {
+                res.sendStatus(200);
+            });
         });
-    });
+    };
+
+    var api = createApp();
     describe('.start()', function() {
         it('should start to listen the specified port on localhost', function(done){
             api.start(PORT);
@@ -61,6 +65,16 @@ describe ('Mock API Application', function () {
                 server.close();
             })
         });
+        it('should do nothing if not started', function(done){
+            var api = createApp();
+            try { 
+                api.stop();
+                done();
+            } catch (err) {
+                should.not.exist(err);
+            }
+        });
+        
     });
 });
 
