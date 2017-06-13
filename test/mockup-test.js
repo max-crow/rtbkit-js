@@ -206,6 +206,36 @@ describe ('Mockup', function () {
             });
         });
         
+        describe ('.setBalance()', function () {
+            var balance = { "USD/1M": 1000000 };
+            it('should return HTTP 200 for the non-top-level account', function(done) {
+                var name = 'hello:world';
+                post(`/v1/accounts/${name}/balance`, balance, function(res) {
+                    expect(res.statusCode).to.equal(200);
+                    expect(res.headers).to.include.key({'method-name': 'banker.setBalance'});
+                    expect(res.headers).to.include.key({'account-name': name});
+                    expect(res.headers).to.include.key({'balance': JSON.stringify(balance)});
+                    done();
+                }).on('error', function(err) {
+                    should.not.exist(err);
+                    done(err);  
+                })
+            });
+            it('should return HTTP 400 for top-level accounts', function(done) {
+                var name = 'hello';
+                post(`/v1/accounts/${name}/balance`, balance, function(res) {
+                    expect(res.statusCode).to.equal(400);
+                    expect(res.headers).to.include.key({'method-name': 'banker.setBalance'});
+                    expect(res.headers).to.include.key({'account-name': name});
+                    expect(res.headers).to.include.key({'balance': JSON.stringify(balance)});
+                    done();
+                }).on('error', function(err) {
+                    should.not.exist(err);
+                    done(err);  
+                })
+            });
+        });
+        
     });
     //----------------------------------------------------------------
 });

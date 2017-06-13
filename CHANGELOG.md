@@ -9,11 +9,12 @@
 * setAgentConfig
 
 #### Banker API
-* ping
-* summary
-* budget
-* accounts
+* ping()
+* summary()
+* budget(newValue)
+* accounts()
 * account(name)
+* Account.balance(newValue)
 
 #### Promise
 * Functions return [Promises] when the callback is no specified.

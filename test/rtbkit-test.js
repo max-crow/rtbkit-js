@@ -269,6 +269,47 @@ describe ('RTBkit', function () {
                 });
             });
 
+            describe ('Account.balance()', function() {
+                var newValue = { "USD/1M": 1000000 };
+                var accountName = 'hello:world';
+                it('should return HTTP 200 for child accounts (callback)', function(done) {
+                    mockup.banker.account(accountName).balance(newValue, function(res) {
+                        expect(res.statusCode).to.equal(200);
+                        expect(res.headers).to.include.key({'method-name': 'banker.setBalance'});
+                        expect(res.headers).to.include.key({'account-name': accountName});
+                        expect(res.headers).to.include.key({'balance': JSON.stringify(newValue)});
+                        done();                
+                    }).on('error', function(err) {
+                        should.not.exist(err);
+                        done(err);
+                    });
+                });
+                it('Async/await: should return HTTP 200 for child accounts', function(done) {
+                    !async function() {
+                        try {
+                            let res = await mockup.banker.account(accountName).balance(newValue);
+                            expect(res).to.have.a.property('statusCode', 200);
+                            expect(res.headers).to.include.key({'method-name': 'banker.setBalance'});
+                            done();
+                        } catch (err) {
+                            done(err);
+                        }
+                    }();
+                });
+                it('should return HTTP 400 for top-level accounts (callback)', function(done) {
+                    accountName = 'hello'
+                    mockup.banker.account(accountName).balance(newValue, function(res) {
+                        expect(res.statusCode).to.equal(400);
+                        expect(res.headers).to.include.key({'method-name': 'banker.setBudget'});
+                        expect(res.headers).to.include.key({'account-name': accountName});
+                        expect(res.headers).to.include.key({'balance': JSON.stringify(newValue)});
+                        done();                
+                    }).on('error', function(err) {
+                        should.not.exist(err);
+                        done(err);
+                    });
+                });
+            });
         });
 
     });
