@@ -74,10 +74,10 @@ describe ('RTBkit', function () {
                 });
             });
 
-            describe ('.getAgentConfig()', function() {
+            describe ('Agent.config()', function() {
                 var agent = "test-agent";
                 it("Should invoke the proper Mockup's method (callback)", function(done) {
-                    mockup.acs.getAgentConfig(agent, function(res) {
+                    mockup.acs.agent(agent).config(function(res) {
                         expect(res).to.have.a.property('statusCode', 200);
                         expect(res.headers).to.include.key({'method-name': 'getAgentConfig'});
                         expect(res.headers).to.include.key({'agent': agent});
@@ -90,9 +90,7 @@ describe ('RTBkit', function () {
                 it("Promise: Should not raise any exceptions", function(done) {
                     spawn(function* () {
                         try {
-                            let res = yield mockup.acs.agent(agent).config;
-                            //expect(res).to.have.a.property('statusCode', 200);
-                            //expect(res.headers).to.include.key({'method-name': 'getAgentConfig'});
+                            let res = yield mockup.acs.agent(agent).config();
                             done();
                         } catch (err) {
                             done(err);
@@ -101,13 +99,15 @@ describe ('RTBkit', function () {
                 });
             });
 
-            describe ('.setAgentConfig()', function() {
+            describe ('Agent.config(newValue)', function() {
                 var agent = 'test-agent';
                 var config = {};
                 it("Should invoke the proper Mockup's method (callback)", function(done) {
-                    mockup.acs.setAgentConfig(agent, config, function(res) {
-                        expect(res.headers).to.include.key({'method-name': 'setAgentConfig'});
+                    mockup.acs.agent(agent).config(config, function(res) {
                         expect(res).to.have.a.property('statusCode', 200)
+                        expect(res.headers).to.include.key({'method-name': 'setAgentConfig'});
+                        expect(res.headers).to.include.key({'agent': agent});
+                        expect(res.headers).to.include.key({'config': JSON.stringify(config)});
                         done();                
                     }).on('error', function(err) {
                         should.not.exist(err);
@@ -117,7 +117,7 @@ describe ('RTBkit', function () {
                 it("Promise: Should not raise any exceptions", function(done) {
                     spawn(function* () {
                         try {
-                            let res = yield mockup.acs.setAgentConfig(agent, config);
+                            let res = yield mockup.acs.agent(agent).config(config);
                             done();
                         } catch (err) {
                             done(err);

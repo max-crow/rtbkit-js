@@ -6,8 +6,8 @@
 #### Agent Configuration Service
 * agents()
 * agent(name)
-* getAgentConfig
-* setAgentConfig
+* Agent.config()
+* Agent.config(newValue)
 
 #### Banker API
 * ping()
