@@ -256,11 +256,12 @@ describe ('RTBkit', function () {
                         done(err);
                     });
                 });
-                it('Async/await: should return for a valid name HTTP 200', function(done) {
+                it('Async/await: should return HTTP 200 for the valid name', function(done) {
                     !async function() {
                         try {
-                            let res = await mockup.banker.accounts();
+                            let res = await mockup.banker.account(accountName).summary();
                             expect(res).to.have.a.property('statusCode', 200);
+                            expect(res.headers).to.include.key({'method-name': 'banker.getAccountSummary'});
                             done();
                         } catch (err) {
                             done(err);
@@ -310,6 +311,51 @@ describe ('RTBkit', function () {
                     });
                 });
             });
+
+            describe ('Account.children()', function() {
+                var accountName = 'hello:world';
+                it('should return an object (callback)', function(done) {
+                    var depth = 3;
+                    mockup.banker.account(accountName).children(depth, function(res) {
+                        expect(res).to.have.a.property('statusCode', 200)
+                        expect(res.headers).to.include.key({'method-name': 'banker.getAccountChildren'});
+                        expect(res.headers).to.include.key({'account-name': accountName});
+                        expect(res.headers).to.include.key({'depth': depth});
+                        expect(res).to.have.a.property('data');
+                        let data = JSON.parse(res.data);
+                        expect(data).to.be.an('object');
+                        done();                
+                    }).on('error', function(err) {
+                        should.not.exist(err);
+                        done(err);
+                    });
+                });
+                it("Async/await: should call the proper Mockup's method", function(done) {
+                    !async function() {
+                        try {
+                            let res = await mockup.banker.account(accountName).children();
+                            expect(res).to.have.a.property('statusCode', 200);
+                            expect(res.headers).to.include.key({'method-name': 'banker.getAccountChildren'});
+                            done();
+                        } catch (err) {
+                            done(err);
+                        }
+                    }();
+                });
+                it("should substitute depth=10 when it's not specified", function(done) {
+                    mockup.banker.account(accountName).children(function(res) {
+                        expect(res).to.have.a.property('statusCode', 200)
+                        expect(res.headers).to.include.key({'method-name': 'banker.getAccountChildren'});
+                        expect(res.headers).to.include.key({'account-name': accountName});
+                        expect(res.headers).to.include.key({'depth': 10});
+                        done();                
+                    }).on('error', function(err) {
+                        should.not.exist(err);
+                        done(err);
+                    });
+                });
+            });
+
         });
 
     });

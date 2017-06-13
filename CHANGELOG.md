@@ -15,6 +15,7 @@
 * accounts()
 * account(name)
 * Account.balance(newValue)
+* Account.children()
 
 #### Promise
 * Functions return [Promises] when the callback is no specified.

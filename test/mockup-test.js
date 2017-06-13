@@ -236,6 +236,25 @@ describe ('Mockup', function () {
             });
         });
         
+        describe ('.getAccountChildren()', function () {
+            var name = 'hello:world';
+            var depth = 10;
+            it('should return an Object', function(done) {
+                get(`/v1/accounts/${name}/children?depth=${depth}`, function(res) {
+                    expect(res.statusCode).to.equal(200);
+                    expect(res.headers).to.include.key({'method-name': 'banker.getAccountChildren'});
+                    expect(res.headers).to.include.key({'account-name': name});
+                    expect(res.headers).to.include.key({'depth': depth.toString()});
+                    expect(res).to.have.a.property('data');
+                    let data = JSON.parse(res.data);
+                    expect(data).to.be.an('object');
+                        done();
+                }).on('error', function(err) {
+                    should.not.exist(err);
+                    done(err);  
+                })
+            });
+        });
     });
     //----------------------------------------------------------------
 });
