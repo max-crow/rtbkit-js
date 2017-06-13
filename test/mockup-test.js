@@ -92,7 +92,7 @@ describe ('Mockup', function () {
         });
 
     });
-
+    //----------------------------------------------------------------
     describe ('#Banker', function () {
         function get(path, callback) {
             return send('GET', conf.ports.banker, path, '', callback);
@@ -146,8 +146,68 @@ describe ('Mockup', function () {
                 })
             });
         });
+        describe ('.getAccountSummary()', function () {
+            it('should return an Object for a valid name', function(done) {
+                var name = 'hello:world';
+                get(`/v1/accounts/${name}/summary`, function(res) {
+                    expect(res.statusCode).to.equal(200);
+                    expect(res.headers).to.include.key({'method-name': 'banker.getAccountSummary'});
+                    expect(res.headers).to.include.key({'account-name': name});
+                    expect(res).to.have.a.property('data');
+                    let data = JSON.parse(res.data);
+                    expect(data).to.be.an('object');
+                    done();
+                }).on('error', function(err) {
+                    should.not.exist(err);
+                    done(err);  
+                })
+            });
+            it('should return HTTP 400 for an invalid name', function(done) {
+                var name = 'invalid:account';
+                get(`/v1/accounts/${name}/summary`, function(res) {
+                    expect(res.statusCode).to.equal(400);
+                    expect(res.headers).to.include.key({'method-name': 'banker.getAccountSummary'});
+                    expect(res.headers).to.include.key({'account-name': name});
+                    done();
+                }).on('error', function(err) {
+                    should.not.exist(err);
+                    done(err);  
+                })
+            });
+        });
+        
+        describe ('.setBudget()', function () {
+            var budget = { "USD/1M": 1000000 };
+            it('should return HTTP 200 for the top-level account', function(done) {
+                var name = 'hello';
+                post(`/v1/accounts/${name}/budget`, budget, function(res) {
+                    expect(res.statusCode).to.equal(200);
+                    expect(res.headers).to.include.key({'method-name': 'banker.setBudget'});
+                    expect(res.headers).to.include.key({'account-name': name});
+                    expect(res.headers).to.include.key({'budget': JSON.stringify(budget)});
+                    done();
+                }).on('error', function(err) {
+                    should.not.exist(err);
+                    done(err);  
+                })
+            });
+            it('should return HTTP 400 for non-top level accounts', function(done) {
+                var name = 'hello:world';
+                post(`/v1/accounts/${name}/budget`, budget, function(res) {
+                    expect(res.statusCode).to.equal(400);
+                    expect(res.headers).to.include.key({'method-name': 'banker.setBudget'});
+                    expect(res.headers).to.include.key({'account-name': name});
+                    expect(res.headers).to.include.key({'budget': JSON.stringify(budget)});
+                    done();
+                }).on('error', function(err) {
+                    should.not.exist(err);
+                    done(err);  
+                })
+            });
+        });
+        
     });
-
+    //----------------------------------------------------------------
 });
 
 

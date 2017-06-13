@@ -9,6 +9,7 @@
 const chai = require('chai')
     , expect = chai.expect
     , should = chai.should()
+    , assert = chai.assert
 ;
 //const chaiAsPromised = require("chai-as-promised"); 
 //chai.use(chaiAsPromised);
@@ -131,6 +132,7 @@ describe ('RTBkit', function () {
                     try {
                         let res = await mockup.banker.ping();
                         expect(res).to.have.a.property('statusCode', 200);
+                        expect(res.headers).to.include.key({'method-name': 'banker.ping'});
                         expect(res).to.have.a.property('data', '"pong"');
                         done();
                     } catch (err) {
@@ -159,6 +161,7 @@ describe ('RTBkit', function () {
                     try {
                         let res = await mockup.banker.summary();
                         expect(res).to.have.a.property('statusCode', 200);
+                        expect(res.headers).to.include.key({'method-name': 'banker.summary'});
                         done();
                     } catch (err) {
                         done(err);
@@ -186,6 +189,7 @@ describe ('RTBkit', function () {
                     try {
                         let res = await mockup.banker.accounts();
                         expect(res).to.have.a.property('statusCode', 200);
+                        expect(res.headers).to.include.key({'method-name': 'banker.accounts'});
                         done();
                     } catch (err) {
                         done(err);
@@ -194,13 +198,77 @@ describe ('RTBkit', function () {
             });
         });
 
-        describe ('.account()', function() {
-            var account;
-            var accountName = 'hello:world';
-            it('should return an object', function() {
-                account = mockup.banker.account(accountName);
-                expect(account).that.be.an('object');
+        describe ('.budget(newValue)', function() {
+            var budget = { "USD/1M": 1000000 };
+            var accountName = 'hello';
+            it('should return HTTP 200 for the top-level account (callback)', function(done) {
+                mockup.banker.budget(accountName, budget, function(res) {
+                    expect(res.statusCode).to.equal(200);
+                    expect(res.headers).to.include.key({'method-name': 'banker.setBudget'});
+                    expect(res.headers).to.include.key({'account-name': accountName});
+                    expect(res.headers).to.include.key({'budget': JSON.stringify(budget)});
+                    done();                
+                }).on('error', function(err) {
+                    should.not.exist(err);
+                    done(err);
+                });
             });
+            it('Async/await: should return HTTP 200 for the top-level account', function(done) {
+                !async function() {
+                    try {
+                        let res = await mockup.banker.budget(accountName, budget);
+                        expect(res).to.have.a.property('statusCode', 200);
+                        expect(res.headers).to.include.key({'method-name': 'banker.setBudget'});
+                        done();
+                    } catch (err) {
+                        done(err);
+                    }
+                }();
+            });
+        });
+
+        describe ('##Banker.Account', function() {
+            var accountName = 'hello:world';
+
+            describe ('.account()', function() {
+                var account;
+                it('should return an object with the proper name', function() {
+                    account = mockup.banker.account(accountName);
+                    expect(account).to.be.an('object');
+                    assert(typeof account.name === 'function', 'account.name should be a function');
+                    expect(account.name()).to.be.equal(accountName);
+                });
+            });
+
+            describe ('Account.summary()', function() {
+                var accountName = 'hello:world';
+                it('should return an object for a valid name (callback)', function(done) {
+                    mockup.banker.account(accountName).summary(function(res) {
+                        expect(res).to.have.a.property('statusCode', 200)
+                        expect(res.headers).to.include.key({'method-name': 'banker.getAccountSummary'});
+                        expect(res.headers).to.include.key({'account-name': accountName});
+                        expect(res).to.have.a.property('data');
+                        let data = JSON.parse(res.data);
+                        expect(data).to.be.an('object');
+                        done();                
+                    }).on('error', function(err) {
+                        should.not.exist(err);
+                        done(err);
+                    });
+                });
+                it('Async/await: should return for a valid name HTTP 200', function(done) {
+                    !async function() {
+                        try {
+                            let res = await mockup.banker.accounts();
+                            expect(res).to.have.a.property('statusCode', 200);
+                            done();
+                        } catch (err) {
+                            done(err);
+                        }
+                    }();
+                });
+            });
+
         });
 
     });
