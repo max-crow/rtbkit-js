@@ -115,6 +115,22 @@ describe ('Mockup', function () {
                 })
             });
         });
+        describe ('.summary()', function () {
+            it('should return a JSON object', function(done) {
+                get('/v1/summary', function(res) {
+                    expect(res.statusCode).to.equal(200);
+                    expect(res.headers).to.include.key({'method-name': 'banker.summary'});
+                    expect(res).to.have.a.property('data');
+                    let data = JSON.parse(res.data);
+                    expect(data).to.be.an('object');
+                    //assert(typeof data === 'object', 'config should be an object or null');
+                    done();
+                }).on('error', function(err) {
+                    should.not.exist(err);
+                    done(err);  
+                })
+            });
+        });
     });
 
 });

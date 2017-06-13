@@ -10,6 +10,7 @@
 
 #### Banker API
 * ping
+* summary
 
 #### Promise
 * Functions return [Promises] when the callback is no specified.

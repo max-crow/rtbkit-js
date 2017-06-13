@@ -139,6 +139,34 @@ describe ('RTBkit', function () {
                 }();
             });
         });
+
+        describe ('.summary()', function() {
+            it('should return an object (callback)', function(done) {
+                mockup.banker.summary(function(res) {
+                    expect(res).to.have.a.property('statusCode', 200)
+                    expect(res.headers).to.include.key({'method-name': 'banker.summary'});
+                    expect(res).to.have.a.property('data');
+                    let data = JSON.parse(res.data);
+                    expect(data).to.be.an('object');
+                    done();                
+                }).on('error', function(err) {
+                    should.not.exist(err);
+                    done(err);
+                });
+            });
+            it('Async/await: should return HTTP 200', function(done) {
+                !async function() {
+                    try {
+                        let res = await mockup.banker.summary();
+                        expect(res).to.have.a.property('statusCode', 200);
+                        done();
+                    } catch (err) {
+                        done(err);
+                    }
+                }();
+            });
+        });
+
     });
     //---------------------------------------------------------
 });
