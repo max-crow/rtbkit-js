@@ -194,6 +194,15 @@ describe ('RTBkit', function () {
             });
         });
 
+        describe ('.account()', function() {
+            var account;
+            var accountName = 'hello:world';
+            it('should return an object', function() {
+                account = mockup.banker.account(accountName);
+                expect(account).that.be.an('object');
+            });
+        });
+
     });
     //---------------------------------------------------------
 });

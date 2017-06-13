@@ -12,6 +12,7 @@
 * ping
 * summary
 * accounts
+* account
 
 #### Promise
 * Functions return [Promises] when the callback is no specified.
