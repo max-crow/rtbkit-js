@@ -46,10 +46,10 @@ describe ('RTBkit', function () {
                 spawn(function* () {
                     try {
                         let res = yield mockup.acs.getAgents();
-                        expect(res).to.have.a.property('statusCode', 200);
-                        expect(res).to.have.a.property('data');
-                        let agents = (res.data);
-                        expect(agents).to.be.an('Array');
+                        //expect(res).to.have.a.property('statusCode', 200);
+                        //expect(res).to.have.a.property('data');
+                        //let agents = (res.data);
+                        expect(res).to.be.an('Array');
                         done();
                     } catch (err) {
                         done(err);
@@ -71,12 +71,12 @@ describe ('RTBkit', function () {
                     done(err);
                 });
             });
-            it("Should invoke the proper Mockup's method (Promise)", function(done) {
+            it("Promise: Should not raise any exceptions", function(done) {
                 spawn(function* () {
                     try {
                         let res = yield mockup.acs.getAgentConfig(agent);
-                        expect(res).to.have.a.property('statusCode', 200);
-                        expect(res.headers).to.include.key({'method-name': 'getAgentConfig'});
+                        //expect(res).to.have.a.property('statusCode', 200);
+                        //expect(res.headers).to.include.key({'method-name': 'getAgentConfig'});
                         done();
                     } catch (err) {
                         done(err);
@@ -98,12 +98,10 @@ describe ('RTBkit', function () {
                     done(err);
                 });
             });
-            it("Should invoke the proper Mockup's method (Promise)", function(done) {
+            it("Promise: Should not raise any exceptions", function(done) {
                 spawn(function* () {
                     try {
                         let res = yield mockup.acs.setAgentConfig(agent, config);
-                        expect(res.headers).to.include.key({'method-name': 'setAgentConfig'});
-                        expect(res).to.have.a.property('statusCode', 200)
                         done();
                     } catch (err) {
                         done(err);
@@ -131,9 +129,7 @@ describe ('RTBkit', function () {
                 !async function() {
                     try {
                         let res = await mockup.banker.ping();
-                        expect(res).to.have.a.property('statusCode', 200);
-                        expect(res.headers).to.include.key({'method-name': 'banker.ping'});
-                        expect(res).to.have.a.property('data', 'pong');
+                        expect(res).to.be.equal('pong');
                         done();
                     } catch (err) {
                         done(err);
@@ -156,12 +152,11 @@ describe ('RTBkit', function () {
                     done(err);
                 });
             });
-            it('Async/await: should return HTTP 200', function(done) {
+            it('Async/await: Should retrun an object', function(done) {
                 !async function() {
                     try {
                         let res = await mockup.banker.summary();
-                        expect(res).to.have.a.property('statusCode', 200);
-                        expect(res.headers).to.include.key({'method-name': 'banker.summary'});
+                        expect(res).to.be.an('object');
                         done();
                     } catch (err) {
                         done(err);
@@ -184,12 +179,10 @@ describe ('RTBkit', function () {
                     done(err);
                 });
             });
-            it('Async/await: should return HTTP 200', function(done) {
+            it('Async/await: should not raise any exceptions', function(done) {
                 !async function() {
                     try {
                         let res = await mockup.banker.accounts();
-                        expect(res).to.have.a.property('statusCode', 200);
-                        expect(res.headers).to.include.key({'method-name': 'banker.accounts'});
                         done();
                     } catch (err) {
                         done(err);
@@ -213,12 +206,10 @@ describe ('RTBkit', function () {
                     done(err);
                 });
             });
-            it('Async/await: should return HTTP 200 for the top-level account', function(done) {
+            it('Async/await: Should not raise any exceptions for the top-level account', function(done) {
                 !async function() {
                     try {
                         let res = await mockup.banker.budget(accountName, budget);
-                        expect(res).to.have.a.property('statusCode', 200);
-                        expect(res.headers).to.include.key({'method-name': 'banker.setBudget'});
                         done();
                     } catch (err) {
                         done(err);
@@ -256,12 +247,10 @@ describe ('RTBkit', function () {
                         done(err);
                     });
                 });
-                it('Async/await: should return HTTP 200 for the valid name', function(done) {
+                it('Async/await: should not raise any exceptions', function(done) {
                     !async function() {
                         try {
                             let res = await mockup.banker.account(accountName).summary();
-                            expect(res).to.have.a.property('statusCode', 200);
-                            expect(res.headers).to.include.key({'method-name': 'banker.getAccountSummary'});
                             done();
                         } catch (err) {
                             done(err);
@@ -285,12 +274,10 @@ describe ('RTBkit', function () {
                         done(err);
                     });
                 });
-                it('Async/await: should return HTTP 200 for child accounts', function(done) {
+                it('Async/await: should not raise any exceptions for child accounts', function(done) {
                     !async function() {
                         try {
                             let res = await mockup.banker.account(accountName).balance(newValue);
-                            expect(res).to.have.a.property('statusCode', 200);
-                            expect(res.headers).to.include.key({'method-name': 'banker.setBalance'});
                             done();
                         } catch (err) {
                             done(err);
@@ -330,12 +317,10 @@ describe ('RTBkit', function () {
                         done(err);
                     });
                 });
-                it("Async/await: should call the proper Mockup's method", function(done) {
+                it("Async/await: should not raise any exceptions", function(done) {
                     !async function() {
                         try {
                             let res = await mockup.banker.account(accountName).children();
-                            expect(res).to.have.a.property('statusCode', 200);
-                            expect(res.headers).to.include.key({'method-name': 'banker.getAccountChildren'});
                             done();
                         } catch (err) {
                             done(err);
@@ -369,12 +354,10 @@ describe ('RTBkit', function () {
                         done(err);
                     });
                 });
-                it("Async/await: should call the proper Mockup's method", function(done) {
+                it("Async/await: should not raise any exceptions", function(done) {
                     !async function() {
                         try {
                             let res = await mockup.banker.account(accountName).close();
-                            expect(res).to.have.a.property('statusCode', 200);
-                            expect(res.headers).to.include.key({'method-name': 'banker.closeAccount'});
                             done();
                         } catch (err) {
                             done(err);

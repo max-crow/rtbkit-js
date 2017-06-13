@@ -40,22 +40,22 @@ const testClient = {
     successCall: function (param, callback) {
         var self = this;
         return invoke(callback, function(callback) {
-            self.lastParam = `/v1/${param}/test`;
+            self.lastParam = param;
             return remoteAsync.successCall(self.lastParam, callback);
         });
     },
 
     raiseError: function (param, callback) {
         return invoke(callback, (callback) => {
-            this.lastParam = `/v1/${param}/test`;
+            this.lastParam = param;
             return remoteAsync.raiseError(this.lastParam, callback);
         });
     }
 };
 
 describe('Conditional Promise Wrapper', function() {
-    describe('#testClient.sucessCall (functor implemented as function)', function() {
-        it('async: should call the provided success callback function', function(done) {
+    describe('#testClient.successCall (functor implemented as function)', function() {
+        it('callback: should call the provided success callback function', function(done) {
             testClient.successCall('test-value', function(res){
                 expect(res).to.equal(testClient.lastParam);
                 done();
@@ -64,7 +64,7 @@ describe('Conditional Promise Wrapper', function() {
                 done(err);
             });
         });
-        it('async: should call the provided success callback lambda', function(done) {
+        it('callback: should call the provided success callback lambda', function(done) {
             testClient.successCall('test-value', (res) => {
                 expect(res).to.equal(testClient.lastParam);
                 done();
@@ -73,11 +73,11 @@ describe('Conditional Promise Wrapper', function() {
                 done(err);
             });
         });
-        it('Promise (no callback): should work with yield', function(done) {
+        it('Promise: should not raise any exception when statusCode is 2xx', function(done) {
             spawn(function* () {
                 try {
-                    var res = yield testClient.successCall('promise');
-                    expect(res).to.equal(testClient.lastParam);
+                    var res = yield testClient.successCall({statusCode: 204, data: 'promise'});
+                    expect(res).to.equal(testClient.lastParam.data);
                     done();
                 } catch (err) {
                     done(err);
@@ -87,7 +87,7 @@ describe('Conditional Promise Wrapper', function() {
     });
 
     describe('#testClient.raiseError (functor implemented as lambda)', function() {
-        it('async: should call the provided error callback function', function(done) {
+        it('callback: should call the provided error callback function', function(done) {
             testClient.raiseError('test-value', function(res){
                 should.not.exist(res);
                 done(res);
@@ -96,7 +96,7 @@ describe('Conditional Promise Wrapper', function() {
                 done();
             });
         });
-        it('async: should call the provided error callback lambda', function(done) {
+        it('callback: should call the provided error callback lambda', function(done) {
             testClient.raiseError('test-value', (res) => {
                 should.not.exist(res);
                 done(res);
@@ -105,31 +105,41 @@ describe('Conditional Promise Wrapper', function() {
                 done();
             });
         });
-        it('Promise (no callback): should work with yield and raise an exception when error', function(done) {
+        it('Promise: should work with yield and raise an exception when error', function(done) {
             spawn(function* () {
                 try {
-                    var res = yield testClient.raiseError('promise');
+                    var res = yield testClient.raiseError({statusCode: 400, data: 'promise'});
                     done(res);
                 } catch (err) {
-                    expect(err).to.have.a.property('message', testClient.lastParam);
                     done();
                 }
             });
         });
+        it('Promise: should raise an exception when statusCode is not 2xx', function(done) {
+            spawn(function* () {
+                try {
+                    var res = yield testClient.successCall({statusCode: 400, data: 'promise'});
+                    done(res);
+                } catch (err) {
+                    done();
+                }
+            });
+        });
+
     });
 
     describe('#Promise', function() {
-        it('should execute a chain of calls', function() {
+        it('should execute a chain of calls', function(done) {
             spawn(function* () {
                 try {
-                    var res = yield testClient.successCall('promise');
-                    expect(res).to.equal(testClient.lastParam);
-                    res = yield testClient.successCall('sucess-2');
-                    expect(res).to.equal(testClient.lastParam);
-                    res = yield testClient.raiseError('error-test');
+                    var res = yield testClient.successCall({statusCode: 200, data: 'promise-200'});
+                    expect(res).to.equal(testClient.lastParam.data);
+                    res = yield testClient.successCall({statusCode: 204, data: 'promise-204'});
+                    expect(res).to.equal(testClient.lastParam.data);
+                    res = yield testClient.raiseError({statusCode: 400, data: 'error-test'});
                     should.not.exist(res);
                 } catch (err) {
-                    expect(err).to.have.a.property('message', testClient.lastParam);
+                    done();
                 }
             });
         });
