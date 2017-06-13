@@ -29,9 +29,9 @@ describe ('RTBkit', function () {
         mockupServer.stop();
     });
     describe('#Agent Config Service', function() {
-        describe ('.getAgents()', function() {
+        describe ('.agents()', function() {
             it('should return a JSON array (callback)', function(done) {
-                mockup.acs.getAgents(function(res) {
+                mockup.acs.agents(function(res) {
                     expect(res).to.have.a.property('statusCode', 200)
                     expect(res.headers).to.include.key({'method-name': 'getAgents'});
                     let agents = (res.data);
@@ -45,7 +45,7 @@ describe ('RTBkit', function () {
             it('should return a JSON array (Promise)', function(done) {
                 spawn(function* () {
                     try {
-                        let res = yield mockup.acs.getAgents();
+                        let res = yield mockup.acs.agents();
                         //expect(res).to.have.a.property('statusCode', 200);
                         //expect(res).to.have.a.property('data');
                         //let agents = (res.data);
