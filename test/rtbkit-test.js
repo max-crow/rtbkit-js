@@ -67,11 +67,6 @@ describe ('RTBkit', function () {
                     expect(agent).to.be.an('object');
                     expect(agent.name()).to.be.equal(agentName);
                 });
-                it("Should return an object with the proper name (name as an array of strings)", function() {
-                    var agent = mockup.acs.agent(agentPath);
-                    expect(agent).to.be.an('object');
-                    expect(agent.name()).to.be.equal(agentName);
-                });
             });
 
             describe ('Agent.config()', function() {
@@ -236,14 +231,20 @@ describe ('RTBkit', function () {
         });
 
         describe ('##Banker.Account', function() {
-            var accountName = 'hello:world';
+            var accountPath = ["hello", "world"];
+            var accountName = accountPath.join(':');
 
             describe ('.account()', function() {
                 var account;
-                it('should return an object with the proper name', function() {
+                it('should return an object with the proper name (name as a string)', function() {
                     account = mockup.banker.account(accountName);
                     expect(account).to.be.an('object');
                     assert(typeof account.name === 'function', 'account.name should be a function');
+                    expect(account.name()).to.be.equal(accountName);
+                });
+                it('should return an object with the proper name (name as array of strings)', function() {
+                    account = mockup.banker.account(accountPath);
+                    expect(account).to.be.an('object');
                     expect(account.name()).to.be.equal(accountName);
                 });
             });
