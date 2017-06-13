@@ -36,9 +36,9 @@ describe ('RTBkit', function () {
                     let agents = JSON.parse(res.data);
                     expect(agents).to.be.an('Array');
                     done();                
-                }).on('error', function(e) {
-                    should.not.exist(error);
-                    done(error);
+                }).on('error', function(err) {
+                    should.not.exist(err);
+                    done(err);
                 });
             });
             it('should return a JSON array (Promise)', function(done) {
@@ -65,9 +65,9 @@ describe ('RTBkit', function () {
                     expect(res.headers).to.include.key({'method-name': 'getAgentConfig'});
                     expect(res.headers).to.include.key({'agent': agent});
                     done();                
-                }).on('error', function(e) {
-                    should.not.exist(error);
-                    done(error);
+                }).on('error', function(err) {
+                    should.not.exist(err);
+                    done(err);
                 });
             });
             it("Should invoke the proper Mockup's method (Promise)", function(done) {
@@ -92,9 +92,9 @@ describe ('RTBkit', function () {
                     expect(res.headers).to.include.key({'method-name': 'setAgentConfig'});
                     expect(res).to.have.a.property('statusCode', 200)
                     done();                
-                }).on('error', function(e) {
-                    should.not.exist(error);
-                    done(error);
+                }).on('error', function(err) {
+                    should.not.exist(err);
+                    done(err);
                 });
             });
             it("Should invoke the proper Mockup's method (Promise)", function(done) {
@@ -112,6 +112,35 @@ describe ('RTBkit', function () {
         });
 
     });
+    //---------------------------------------------------------
+    describe('#Banker', function() {
+        describe ('.ping()', function() {
+            it('should return "pong" (callback)', function(done) {
+                mockup.banker.ping(function(res) {
+                    expect(res).to.have.a.property('statusCode', 200)
+                    expect(res.headers).to.include.key({'method-name': 'banker.ping'});
+                    expect(res).to.have.a.property('data', '"pong"');
+                    done();                
+                }).on('error', function(err) {
+                    should.not.exist(err);
+                    done(err);
+                });
+            });
+            it('should return "pong" (async/await)', function(done) {
+                !async function() {
+                    try {
+                        let res = await mockup.banker.ping();
+                        expect(res).to.have.a.property('statusCode', 200);
+                        expect(res).to.have.a.property('data', '"pong"');
+                        done();
+                    } catch (err) {
+                        done(err);
+                    }
+                }();
+            });
+        });
+    });
+    //---------------------------------------------------------
 });
 
 

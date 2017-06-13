@@ -16,7 +16,8 @@ const mockup = require('../lib/mockup.js')();
 
 var conf = {
     ports: {
-        acs: 9986
+        acs: 9986,
+        banker: 9985
     }
 };
 
@@ -46,9 +47,9 @@ describe ('Mockup', function () {
                     let agents = JSON.parse(res.data);
                     expect(agents).to.be.an('Array');
                     done();
-                }).on('error', function (error) {
-                    should.not.exist(error);
-                    done(error);
+                }).on('error', function (err) {
+                    should.not.exist(err);
+                    done(err);
                 });
 
             });
@@ -64,9 +65,9 @@ describe ('Mockup', function () {
                     let config = JSON.parse(res.data);
                     assert(typeof config === 'object', 'config should be an object or null');
                     done();
-                }).on('error', function (error) {
-                    should.not.exist(error);
-                    done(error);
+                }).on('error', function (err) {
+                    should.not.exist(err);
+                    done(err);
                 });
 
             });
@@ -82,15 +83,40 @@ describe ('Mockup', function () {
                     expect(res.headers).to.include.key({'agent': agent});
                     expect(res.headers).to.include.key({'config': config});
                     done();
-                }).on('error', function (error) {
-                    should.not.exist(error);
-                    done(error);
+                }).on('error', function (err) {
+                    should.not.exist(err);
+                    done(err);
                 });
 
             });
         });
 
     });
+
+    describe ('#Banker', function () {
+        function get(path, callback) {
+            return send('GET', conf.ports.banker, path, '', callback);
+        };
+
+        function post(path, data, callback) {
+            return send('POST', conf.ports.banker, path, data, callback);
+        };
+
+        describe ('.ping()', function () {
+            it('should return "pong"', function(done) {
+                get('/ping', function(res) {
+                    expect(res.statusCode).to.equal(200);
+                    expect(res.headers).to.include.key({'method-name': 'banker.ping'});
+                    expect(res).to.have.a.property('data', '"pong"');
+                    done();
+                }).on('error', function(err) {
+                    should.not.exist(err);
+                    done(err);  
+                })
+            });
+        });
+    });
+
 });
 
 

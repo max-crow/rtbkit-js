@@ -8,6 +8,9 @@
 * getAgentConfig
 * setAgentConfig
 
+#### Banker API
+* ping
+
 #### Promise
 * Functions return [Promises] when the callback is no specified.
 * rtbkit.spawn for ES6 generators (synchronous-like mode with yield).
