@@ -11,6 +11,7 @@
 #### Banker API
 * ping
 * summary
+* accounts
 
 #### Promise
 * Functions return [Promises] when the callback is no specified.
