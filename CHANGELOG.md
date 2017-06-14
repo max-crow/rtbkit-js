@@ -1,7 +1,7 @@
 
 # Changelog
 
-## v0.1.0 (2017-06-10)  
+## v0.1.0 (2017-06-14)  
 ### Added
 #### Agent Configuration Service
 * agents()
