@@ -5,7 +5,7 @@
 ### Added
 #### HTTP Bidding Agent
 * rtbkit.biddingAgent()
-* onBid(externalId, creatives, bidRequest, imp) => {price, crid, ext.priority}
+* bid( (externalId, creatives, bidRequest, imp) => {price, crid, ext.priority} )
 
 ## v0.1.0 (2017-06-14)  
 ### Added
