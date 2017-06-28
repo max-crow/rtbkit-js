@@ -39,17 +39,24 @@ const BR = {
                 options.campaigns = 1; 
             }
             if (options.campaigns) {
+                let ids = [];
+                if(Array.isArray(options.campaigns)) {
+                    ids = options.campaigns;
+                } else {
+                    for(let i = 0; i<options.campaigns; ++i) {
+                        ids.push(i);
+                    }
+                }
+
                 if(br.imp[0].ext === undefined) {
                     br.imp[0].ext = {};
                 }
-                let ids = [];
-                br.imp[0].ext["external-ids"] = ids;
-                for(let i = 0; i<options.campaigns; ++i) {
-                    ids.push(i);
-                }
+                br.imp[0].ext["external-ids"] = ids;                
             }
             while (br.imp.length < options.imp) {
-                br.imp.push(br.imp[0]);
+                var imp  = JSON.parse(JSON.stringify(br.imp[0]));
+                imp.id = imp.id + br.imp.length;
+                br.imp.push(imp);
             }
         }
         return br;
@@ -247,9 +254,14 @@ describe ('HTTP Bidding Agent', function () {
                 var cb = sinon.stub().returns(null);
                 bidder.bid(cb);
 
-                var bidRequest = BR.http();
+                var campaigns = [0, 1, 1555];
+                var bidRequest = BR.http({imp: 2, campaigns: campaigns});
                 post(bidRequest, function(res) {
-                    cb.should.be.calledWith(bidRequest);
+                    for (let imp of bidRequest.imp) {
+                        for (let c of campaigns) {
+                            cb.should.be.calledWith(c, bidRequest, imp);
+                        }
+                    }
                     done();
                 }).on('error', function (err) {
                     done(err);
