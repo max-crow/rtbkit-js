@@ -1,10 +1,11 @@
 
 # Changelog
 
-## v0.2.0 (2017-06-)  
+## v0.2.0 (2017-06-28)  
 ### Added
 #### HTTP Bidding Agent
 * rtbkit.biddingAgent()
+* onBid(externalId, bidRequest, imp)
 
 ## v0.1.0 (2017-06-14)  
 ### Added
