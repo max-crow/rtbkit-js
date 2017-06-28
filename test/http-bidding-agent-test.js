@@ -95,7 +95,133 @@ describe ('HTTP Bidding Agent', function () {
                 testBid(len);
             }
         })
-        describe.skip('should check if the handler returns a valid type value:', function() {
+        describe('# return value', function() {
+            it('return object == bid', function(done){
+                var bidRequest = BR.bsw();
+                var handlerCalled = false;
+                
+                var bid = {price: 1};
+                var cb = sinon.stub().returns(bid);
+                bidder.bid(cb);
+
+                post(bidRequest, function(res) {
+                    expect(res.statusCode).to.equal(200, `data: '${res.data}'`);
+                    done();
+                }).on('error', function (err) {
+                    done(err);
+                });
+            });
+            it('return undefined == error', function(done){
+                var bidRequest = BR.bsw();
+                
+                var cb = sinon.stub().returns(undefined);
+                bidder.bid(cb);
+
+                post(bidRequest, function(res) {
+                    expect(res.statusCode).to.equal(500);
+                    assert(res.data.indexOf('undefined') !== -1, 'response data do not contain error description');
+                    done();
+                }).on('error', function (err) {
+                    should.not.exist(err);
+                    done(err);
+                });
+            });
+            it('return null == no-bid', function(done){
+                var bidRequest = BR.bsw();
+                
+                var cb = sinon.stub().returns(null);
+                bidder.bid(cb);
+
+                post(bidRequest, function(res) {
+                    expect(res.statusCode).to.equal(204);
+                    done();
+                }).on('error', function (err) {
+                    should.not.exist(err);
+                    done(err);
+                });
+            });
+            it('return non-object == error', function(done){
+                var bidRequest = BR.bsw();
+                
+                var bid = "string";
+                var cb = sinon.stub().returns(bid);
+                bidder.bid(cb);
+
+                post(bidRequest, function(res) {
+                    expect(res.statusCode).to.equal(500);
+                    assert(
+                        res.data.indexOf('object') !== -1
+                            && res.data.indexOf(typeof bid) !== -1, 
+                        'response data do not contain error description'
+                    );
+                    done();
+                }).on('error', function (err) {
+                    should.not.exist(err);
+                    done(err);
+                });
+            });
+            it('return [error, error] == [error, error]', function(done){
+                var bidRequest = BR.bsw();
+                bidRequest.imp = [{}, {}]
+                
+                var cb = sinon.stub().returns(undefined);
+                bidder.bid(cb);
+
+                post(bidRequest, function(res) {
+                    expect(res.statusCode).to.equal(500);
+                    var errors = JSON.parse(res.data);
+                    expect(errors).to.be.an('array').with.length(2);
+                    done();
+                }).on('error', function (err) {
+                    should.not.exist(err);
+                    done(err);
+                });
+            });
+            it('return [no-bid, error] == [error]', function(done){
+                var bidRequest = BR.bsw();
+                bidRequest.imp = [{}, {}]
+                
+                var cb = sinon.stub();
+                cb.onCall(0).returns(null);
+                cb.onCall(1).returns(undefined);
+                bidder.bid(cb);
+
+                post(bidRequest, function(res) {
+                    expect(res.statusCode).to.equal(500);
+                    var errors = JSON.parse(res.data);
+                    expect(errors).to.be.an('array').with.length(1);
+                    done();
+                }).on('error', function (err) {
+                    should.not.exist(err);
+                    done(err);
+                });
+            });
+            it('return [no-bid, bid, error, bid, ...] == [bid]', function(done){
+                var bidRequest = BR.bsw();
+                bidRequest.imp = [1, 2, 3, 4, 5, 6, 7]
+                
+                var cb = sinon.stub();
+                cb.onCall(0).returns(null);
+                cb.onCall(1).returns({});
+                cb.onCall(2).returns(undefined);
+                cb.onCall(3).returns({});
+                cb.returns(null);
+                bidder.bid(cb);
+
+                post(bidRequest, function(res) {
+                    expect(res.statusCode).to.equal(200);
+                    var bres = JSON.parse(res.data);
+                    expect(bres).to.be.an('object')
+                        .that.has.a.nested.property('seatbid[0].bid')
+                        .that.is.an('array').with.length(2);
+                    done();
+                }).on('error', function (err) {
+                    should.not.exist(err);
+                    done(err);
+                });
+            });
+        });
+/*        describe.skip('should check if the handler returns a valid type value:', function() {
             it('return undefined == error', function(done){
                 var bidRequest = BR.bsw();
                 var handlerCalled = false;
@@ -188,7 +314,7 @@ describe ('HTTP Bidding Agent', function () {
             });
             
         });
-
+*/
     });
 });
 
