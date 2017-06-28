@@ -24,7 +24,36 @@ const PORT = 7654;
 const PATH = '/auctions';
 
 const BR = {
-    'bsw': () => { return {"id":"81d8e83a-9f33-4269-8279-8bc37c09556a","site":{"id":"rubicon_47400","publisher":{"name":"","id":"rubicon_10336"},"name":"eBay Kleinanzeigen Layer 1","cat":["IAB22"],"domain":"ebay-kleinanzeigen.de","ext":{},"page":"https://www.ebay-kleinanzeigen.de/s-anzeige/opel-corsa-b-automatik-fahrbereit/473172209-216-16344"},"wseat":["123"],"user":{"ext":{"ug":0}},"device":{"connectiontype":0,"model":"iPad","language":"ar","geo":{"country":"DE","city":"Munich","region":"02","zip":"80469"},"make":"Apple","osv":"9.3.2","os":"iOS","devicetype":1,"ip":"85.181.122.114","js":1,"ua":"Mozilla/5.0 (iPad; CPU OS 9_3_2 like Mac OS X) AppleWebKit/601.1.46 (KHTML, like Gecko) Version/9.0 Mobile/13F69 Safari/601.1"},"tmax":101,"cur":["USD"],"imp":[{"bidfloor":0.003,"id":"1","banner":{"pos":3,"topframe":0,"h":250,"battr":[1,3,8,9,10,13,14],"w":300,"btype":[1]},"exp":300,"tagid":"rubicon_412600","bidfloorcur":"USD","ext":{"rubicon":{"site_size_session_count":0}},"secure":1,"iframebuster":["mm","af","dc","ft"],"instl":0}],"bcat":["IAB26","BSW4","IAB25-3","IAB7","BSW2","BSW10","BSW1","IAB7-17"],"ext":{"is_secure":1,"wt":1,"clktrkrq":0,"ssp":"rubicon"},"at":2}; }
+    'bsw': () => { return {"id":"81d8e83a-9f33-4269-8279-8bc37c09556a","site":{"id":"rubicon_47400","publisher":{"name":"","id":"rubicon_10336"},"name":"eBay Kleinanzeigen Layer 1","cat":["IAB22"],"domain":"ebay-kleinanzeigen.de","ext":{},"page":"https://www.ebay-kleinanzeigen.de/s-anzeige/opel-corsa-b-automatik-fahrbereit/473172209-216-16344"},"wseat":["123"],"user":{"ext":{"ug":0}},"device":{"connectiontype":0,"model":"iPad","language":"ar","geo":{"country":"DE","city":"Munich","region":"02","zip":"80469"},"make":"Apple","osv":"9.3.2","os":"iOS","devicetype":1,"ip":"85.181.122.114","js":1,"ua":"Mozilla/5.0 (iPad; CPU OS 9_3_2 like Mac OS X) AppleWebKit/601.1.46 (KHTML, like Gecko) Version/9.0 Mobile/13F69 Safari/601.1"},"tmax":101,"cur":["USD"],"imp":[{"bidfloor":0.003,"id":"1","banner":{"pos":3,"topframe":0,"h":250,"battr":[1,3,8,9,10,13,14],"w":300,"btype":[1]},"exp":300,"tagid":"rubicon_412600","bidfloorcur":"USD","ext":{"rubicon":{"site_size_session_count":0}},"secure":1,"iframebuster":["mm","af","dc","ft"],"instl":0}],"bcat":["IAB26","BSW4","IAB25-3","IAB7","BSW2","BSW10","BSW1","IAB7-17"],"ext":{"is_secure":1,"wt":1,"clktrkrq":0,"ssp":"rubicon"},"at":2}; },
+    'http': function(options) {
+        var br = this.bsw();
+        if(!options) {
+            br.imp[0].ext["external-ids"] = [0];
+        } else {
+            if (options.imp !== undefined && options.imp === 0)  {
+                br.imp = [];
+                return br;
+            } 
+            options.imp = options.imp || 1;
+            if (options.campaigns === undefined) {
+                options.campaigns = 1; 
+            }
+            if (options.campaigns) {
+                if(br.imp[0].ext === undefined) {
+                    br.imp[0].ext = {};
+                }
+                let ids = [];
+                br.imp[0].ext["external-ids"] = ids;
+                for(let i = 0; i<options.campaigns; ++i) {
+                    ids.push(i);
+                }
+            }
+            while (br.imp.length < options.imp) {
+                br.imp.push(br.imp[0]);
+            }
+        }
+        return br;
+    }
 }
 
 describe ('HTTP Bidding Agent', function () {
@@ -52,7 +81,7 @@ describe ('HTTP Bidding Agent', function () {
     });   
     describe.skip ('.imp()', function() {
         describe('should call the handler once for each br.imp[]', function() {
-            var bidRequest = BR.bsw();
+            var bidRequest = BR.http();
             var testImp = function(){
                 var bid = null;
                 var cb = sinon.stub().returns(bid);
@@ -70,35 +99,31 @@ describe ('HTTP Bidding Agent', function () {
         })
     });
     describe('.bid()', function() {
-        describe('should call the handler once for each br.imp[]', function() {
-            var testBid = function(impLen) {
-                it(`imp.size == ${impLen}`, function(done) { 
-                    var bidRequest = BR.bsw();
-                    bidRequest.imp = [];
-                    for(var i=0; i<impLen; ++i) {
-                        bidRequest.imp.push({});
-                    }
-                    var bid = null;
+        describe('should call the handler once for each br.imp[].ext.external-ids[]', function() {
+            var testBid = function(impLen, idLen) {
+                it(`imp.size = ${impLen} external-ids.size = ${idLen}`, function(done) { 
+                    var bidRequest = BR.http({imp: impLen, campaigns: idLen});
                     var cb;
-                    cb = sinon.stub().returns(bid);
+                    cb = sinon.stub().returns(null);
                     bidder.bid(cb);
-
                     post(bidRequest, function(res) {
-                        expect(cb.callCount).to.be.equal(impLen);
+                        expect(res.statusCode).to.equal(204, `data: '${res.data}'`);
+                        expect(cb.callCount).to.be.equal(impLen * idLen);
                         done();
                     }).on('error', function (err) {
                         done(err);
                     });
                 });
             }
-            for(var len of [0, 1, 3, 7]) {
-                testBid(len);
+            for(var impLen of [0, 1, 3, 7]) {
+                for(var idLen of [1, 2]) {
+                    testBid(impLen, idLen);
+                }
             }
         })
         describe('# return value', function() {
-            it('return object == bid', function(done){
-                var bidRequest = BR.bsw();
-                var handlerCalled = false;
+            it('return object == bid', function(done) {
+                var bidRequest = BR.http();
                 
                 var bid = {price: 1};
                 var cb = sinon.stub().returns(bid);
@@ -112,7 +137,7 @@ describe ('HTTP Bidding Agent', function () {
                 });
             });
             it('return undefined == error', function(done){
-                var bidRequest = BR.bsw();
+                var bidRequest = BR.http();
                 
                 var cb = sinon.stub().returns(undefined);
                 bidder.bid(cb);
@@ -127,7 +152,7 @@ describe ('HTTP Bidding Agent', function () {
                 });
             });
             it('return null == no-bid', function(done){
-                var bidRequest = BR.bsw();
+                var bidRequest = BR.http();
                 
                 var cb = sinon.stub().returns(null);
                 bidder.bid(cb);
@@ -141,7 +166,7 @@ describe ('HTTP Bidding Agent', function () {
                 });
             });
             it('return non-object == error', function(done){
-                var bidRequest = BR.bsw();
+                var bidRequest = BR.http();
                 
                 var bid = "string";
                 var cb = sinon.stub().returns(bid);
@@ -161,12 +186,10 @@ describe ('HTTP Bidding Agent', function () {
                 });
             });
             it('return [error, error] == [error, error]', function(done){
-                var bidRequest = BR.bsw();
-                bidRequest.imp = [{}, {}]
+                var bidRequest = BR.http({imp: 2});
                 
                 var cb = sinon.stub().returns(undefined);
                 bidder.bid(cb);
-
                 post(bidRequest, function(res) {
                     expect(res.statusCode).to.equal(500);
                     var errors = JSON.parse(res.data);
@@ -178,8 +201,7 @@ describe ('HTTP Bidding Agent', function () {
                 });
             });
             it('return [no-bid, error] == [error]', function(done){
-                var bidRequest = BR.bsw();
-                bidRequest.imp = [{}, {}]
+                var bidRequest = BR.http({imp: 2});
                 
                 var cb = sinon.stub();
                 cb.onCall(0).returns(null);
@@ -197,8 +219,7 @@ describe ('HTTP Bidding Agent', function () {
                 });
             });
             it('return [no-bid, bid, error, bid, ...] == [bid]', function(done){
-                var bidRequest = BR.bsw();
-                bidRequest.imp = [1, 2, 3, 4, 5, 6, 7]
+                var bidRequest = BR.http({imp: 5});
                 
                 var cb = sinon.stub();
                 cb.onCall(0).returns(null);
@@ -221,9 +242,24 @@ describe ('HTTP Bidding Agent', function () {
                 });
             });
         });
+        describe('should pass proper arguments into the handler', function() {
+            it('return object == bid', function(done) {
+                var cb = sinon.stub().returns(null);
+                bidder.bid(cb);
+
+                var bidRequest = BR.http();
+                post(bidRequest, function(res) {
+                    cb.should.be.calledWith(bidRequest);
+                    done();
+                }).on('error', function (err) {
+                    done(err);
+                });
+            });
+
+        });
 /*        describe.skip('should check if the handler returns a valid type value:', function() {
             it('return undefined == error', function(done){
-                var bidRequest = BR.bsw();
+                var bidRequest = BR.http();
                 var handlerCalled = false;
                 
                 bidder.bid((campaignId, breq, imp, creativeList, seat)=> {
@@ -242,7 +278,7 @@ describe ('HTTP Bidding Agent', function () {
                 });
             });
             it('return null == no-bid', function(done){
-                var bidRequest = BR.bsw;
+                var bidRequest = BR.http;
                 var handlerCalled = false;
                 
                 var cb = sinon.stub().returns(null);
@@ -258,7 +294,7 @@ describe ('HTTP Bidding Agent', function () {
                 });
             });
             it('return non-object == error', function(done){
-                var bidRequest = BR.bsw();
+                var bidRequest = BR.http();
                 var handlerCalled = false;
                 
                 var bid = "string";
@@ -280,7 +316,7 @@ describe ('HTTP Bidding Agent', function () {
                 });
             });
             it('return object == bid', function(done){
-                var bidRequest = BR.bsw();
+                var bidRequest = BR.http();
                 var handlerCalled = false;
                 
                 var bid = {price: 1};
