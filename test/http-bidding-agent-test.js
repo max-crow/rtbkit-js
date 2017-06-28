@@ -249,25 +249,22 @@ describe ('HTTP Bidding Agent', function () {
                 });
             });
         });
-        describe('should pass proper arguments into the handler', function() {
-            it('return object == bid', function(done) {
-                var cb = sinon.stub().returns(null);
-                bidder.bid(cb);
+        it('should pass proper arguments into the handler', function(done) {
+            var cb = sinon.stub().returns(null);
+            bidder.bid(cb);
 
-                var campaigns = [0, 1, 1555];
-                var bidRequest = BR.http({imp: 2, campaigns: campaigns});
-                post(bidRequest, function(res) {
-                    for (let imp of bidRequest.imp) {
-                        for (let c of campaigns) {
-                            cb.should.be.calledWith(c, bidRequest, imp);
-                        }
+            var campaigns = [0, 1, 1555];
+            var bidRequest = BR.http({imp: 2, campaigns: campaigns});
+            post(bidRequest, function(res) {
+                for (let imp of bidRequest.imp) {
+                    for (let c of campaigns) {
+                        cb.should.be.calledWith(c, bidRequest, imp);
                     }
-                    done();
-                }).on('error', function (err) {
-                    done(err);
-                });
+                }
+                done();
+            }).on('error', function (err) {
+                done(err);
             });
-
         });
     });
 });
