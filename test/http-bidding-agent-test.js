@@ -266,6 +266,64 @@ describe ('HTTP Bidding Agent', function () {
                 done(err);
             });
         });
+        describe('# bid data', function() {
+            it('should return the bid', function(done) {
+                var bid = {
+                    id: 'qwerty1234567890',
+                    impid: 'imp.id',
+                    price: 12345,
+                    crid: 'bid.crid',
+                    ext: {
+                        'external-id': 'external-id',
+                        'priority': 'bid.priority'
+                    }
+                };
+                var cb = sinon.stub().returns(bid);
+                bidder.bid(cb);
+
+                var bidRequest = BR.http();
+                post(bidRequest, function(res) {
+                    expect(res.statusCode).to.equal(200);
+                    expect(JSON.parse(res.data))
+                        .to.have.a.nested.property('seatbid[0].bid[0]')
+                            .that.deep.equal(bid)
+                    ;
+                    done();
+                }).on('error', function (err) {
+                    done(err);
+                });
+            });
+            it('should fill down bid.id, bid.impid, and bid.ext.external-id automatically if missed', function(done) {
+                var campaigns = [0];
+                var bidRequest = BR.http({campaigns: campaigns});
+
+                var bid = {
+                    price: 12345,
+                    crid: 'bid.crid',
+                    ext: {
+                        'priority': 'bid.priority'
+                    }
+                };
+                var rbid = JSON.parse(JSON.stringify(bid));
+                rbid.impid = bidRequest.imp[0].id;
+                rbid.ext['external-id'] = campaigns[0];
+                rbid.id = `${bidRequest.id}:${rbid.impid}:${rbid.ext['external-id']}`;
+
+                var cb = sinon.stub().returns(bid);
+                bidder.bid(cb);
+
+                post(bidRequest, function(res) {
+                    expect(res.statusCode).to.equal(200);
+                    expect(JSON.parse(res.data))
+                        .to.have.a.nested.property('seatbid[0].bid[0]')
+                            .that.deep.equal(rbid)
+                    ;
+                    done();
+                }).on('error', function (err) {
+                    done(err);
+                });
+            });
+        });
     });
 });
 
