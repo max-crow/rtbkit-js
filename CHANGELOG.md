@@ -7,6 +7,10 @@
 * rtbkit.biddingAgent()
 * bid( (externalId, creatives, bidRequest, imp) => {price, crid, ext.priority} )
 
+#### Tests
+* [Sinon.JS]
+* [Sinon-Chai]
+
 ## v0.1.0 (2017-06-14)  
 ### Added
 #### Agent Configuration Service
@@ -37,3 +41,5 @@
 [Promises]: https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Promise
 [Mocha]: https://mochajs.org/
 [Chai]: http://chaijs.com/
+[Sinon.JS]: http://sinonjs.org/
+[Sinon-Chai]: https://github.com/domenic/sinon-chai
