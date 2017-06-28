@@ -1,6 +1,11 @@
 
 # Changelog
 
+## v0.2.0 (2017-06-)  
+### Added
+#### HTTP Bidding Agent
+* rtbkit.biddingAgent()
+
 ## v0.1.0 (2017-06-14)  
 ### Added
 #### Agent Configuration Service
