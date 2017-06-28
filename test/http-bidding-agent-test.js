@@ -29,6 +29,7 @@ const BR = {
         var br = this.bsw();
         if(!options) {
             br.imp[0].ext["external-ids"] = [0];
+            br.imp[0].ext["creative-ids"] = {"0": 0};
         } else {
             if (options.imp !== undefined && options.imp === 0)  {
                 br.imp = [];
@@ -38,8 +39,8 @@ const BR = {
             if (options.campaigns === undefined) {
                 options.campaigns = 1; 
             }
+            let ids = [];
             if (options.campaigns) {
-                let ids = [];
                 if(Array.isArray(options.campaigns)) {
                     ids = options.campaigns;
                 } else {
@@ -48,10 +49,22 @@ const BR = {
                     }
                 }
 
-                if(br.imp[0].ext === undefined) {
-                    br.imp[0].ext = {};
-                }
+                br.imp[0].ext == br.imp[0].ext || {};
                 br.imp[0].ext["external-ids"] = ids;                
+            }
+            if (options.creatives === undefined) {
+                options.creatives = {};
+                for(let id of ids) {
+                    options.creatives[id] = [0]; 
+                }
+            }
+            if (options.campaigns && options.creatives) {
+                //br.imp[0].ext == br.imp[0].ext || {};
+                let creatives = {};
+                for(let id of ids) {
+                    creatives[id] = options.creatives[id];
+                }
+                br.imp[0].ext['creative-ids'] = creatives;                
             }
             while (br.imp.length < options.imp) {
                 var imp  = JSON.parse(JSON.stringify(br.imp[0]));
@@ -254,11 +267,12 @@ describe ('HTTP Bidding Agent', function () {
             bidder.bid(cb);
 
             var campaigns = [0, 1, 1555];
-            var bidRequest = BR.http({imp: 2, campaigns: campaigns});
+            var creatives = {"0": [0], "1": [1], "1555": [3]};
+            var bidRequest = BR.http({imp: 2, campaigns: campaigns, creatives: creatives});
             post(bidRequest, function(res) {
                 for (let imp of bidRequest.imp) {
                     for (let c of campaigns) {
-                        cb.should.be.calledWith(c, bidRequest, imp);
+                        cb.should.be.calledWith(c, creatives[c], bidRequest, imp);
                     }
                 }
                 done();
