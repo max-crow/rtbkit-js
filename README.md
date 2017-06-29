@@ -12,8 +12,42 @@ rtbkit.js is available on [npm]. To install it, type:
 const rtbkit = require('rtbkit-js');
 ```
 
-Now we should specify an RTBkit instance we will work with:
+Now we can :
+* launch an HTTP bidding agent, or
+* connect to an RTBkit instance to work with its RESTful APIs
 
+### HTTP Bidding Agent
+You may create an HTTP Bidding Agent just typing a few strings:
+```js
+const bidder = rtbkit.biddingAgent();
+
+var PORT = 7654;
+var PATH = '/auctions';
+
+bidder.bid(function(campaign, creatives, bidRequest, imp) {
+    if (campaign == 111) {
+        return null;            // no-bid
+    }
+    return { 
+        price: 0.1,             // bid CPM
+        crid: creatives[0],     // bid with the first allowed creative
+        ext: { priority: 1 }    // (optional)
+    };
+});
+
+bidder.listen(PORT, PATH);
+```
+
+This bidder will response with no-bids for the campaign 111 (external-id from the bidding agent config) and will bid with 0.1 CPM for all other campaigns.
+
+The library will automatically fill down bid.id, bid.impid, and bid.ext.external-id fields.
+
+The function will be called once for each imp item and each allowed campaign that have been specified by RTBkit in the bid request.
+
+
+### RTBkit RESTful APIs
+
+To connect to an RTBkit inststance type:
 ```js
 const rtb_test = rtbkit.instance("127.0.0.1");
 const banker = rtb_test.banker;

@@ -1,11 +1,14 @@
 
 # Changelog
 
-## v0.2.0 (2017-06-28)  
+## v0.2.0 (2017-06-29)  
 ### Added
 #### HTTP Bidding Agent
 * rtbkit.biddingAgent()
 * bid( (externalId, creatives, bidRequest, imp) => {price, crid, ext.priority} )
+
+#### Examples
+* bidder.js - HTTP Bidding Agent
 
 #### Tests
 * [Sinon.JS]
@@ -32,6 +35,9 @@
 #### Promise
 * Functions return [Promises] when the callback is no specified.
 * rtbkit.spawn for ES6 generators (synchronous-like mode with yield).
+
+#### Examples
+* simple.js
 
 #### Tests
 * [Mocha]
