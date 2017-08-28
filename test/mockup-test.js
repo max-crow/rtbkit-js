@@ -17,6 +17,10 @@ const mockup = require('../lib/mockup.js')();
 var conf = {
     ports: {
         acs: 9986,
+        adserver: {
+            win: 12340,
+            event: 12341
+        },
         banker: 9985
     }
 };
@@ -90,6 +94,41 @@ describe ('Mockup', function () {
 
             });
         });
+
+    });
+    //----------------------------------------------------------------
+    describe ('#AdServer', function () {
+        // function get(path, callback) {
+        //     return send('GET', conf.ports.acs, path, '', callback);
+        // };
+
+        function post(port, data, callback) {
+            return send('POST', port, '', data, callback);
+        };
+
+        describe ('.win', function () {
+            var winData = {
+                "timestamp":1365517883.9742889404,
+                "bidRequestId":"4BZkWjMDeAWZ",
+                "impid":"604356",
+                "price":0.8493150684931507,
+                "userIds" : ["some-user-id", "another-user-id"]
+            };
+            it('should return HTTP 200', function(done) {
+                post(conf.ports.adserver.win, winData, function (res) {
+                    expect(res.statusCode).to.equal(200);
+                    expect(res.headers).to.include.key({'method-name': 'win'});
+                    expect(res.headers).to.include.key({'data': JSON.stringify(winData)});
+                    done();
+                }).on('error', function (err) {
+                    should.not.exist(err);
+                    done(err);
+                });
+
+            });
+        });
+
+        
 
     });
     //----------------------------------------------------------------
