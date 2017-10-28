@@ -401,6 +401,39 @@ describe ('RTBkit', function () {
 
         });
         //---------------------------------------------------------
+        describe('# AdServer Protocol', function() {
+            describe('.win()', function() {
+                var data = {
+                    "timestamp":1365517883.9742889404,
+                    "bidRequestId":"4BZkWjMDeAWZ",
+                    "impid":"604356",
+                    "price":0.8493150684931507,
+                    "userIds" : ["some-user-id", "another-user-id"]
+                };
+                it("Should invoke the proper Mockup's method (callback)", function(done) {
+                    mockup.adserver.win(data, function(res) {
+                        expect(res).to.have.a.property('statusCode', 200)
+                        expect(res.headers).to.include.key({'method-name': 'win'});
+                        expect(res.headers).to.include.key({'data': JSON.stringify(data)});
+                        done();                
+                    }).on('error', function(err) {
+                        should.not.exist(err);
+                        done(err);
+                    });
+                });
+                it("Promise: Should not raise any exceptions", function(done) {
+                    spawn(function* () {
+                        try {
+                            let res = yield mockup.adserver.win(data);
+                            done();
+                        } catch (err) {
+                            done(err);
+                        }
+                    });
+                });
+            });
+        });
+        //---------------------------------------------------------
     });
     describe('# HTTP Bidding Agent', function() {
         describe('.biddingAgent()', function() {
@@ -411,6 +444,7 @@ describe ('RTBkit', function () {
             });
         });
     });
+
 });
 
 
