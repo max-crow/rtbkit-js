@@ -18,8 +18,8 @@ var conf = {
     ports: {
         acs: 9986,
         adserver: {
-            win: 12340,
-            event: 12341
+            win: 18143,
+            events: 18144
         },
         banker: 9985
     }
