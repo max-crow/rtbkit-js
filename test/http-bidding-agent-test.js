@@ -307,25 +307,23 @@ describe ('HTTP Bidding Agent', function () {
                     done(err);
                 });
             });
-            it('should fill down bid.id, bid.impid, and bid.ext.external-id automatically if missed', function(done) {
+            it('should fill down bid.id, bid.impid, bid.ext.external-id, and bid.ext.prority=1 automatically if missed', function(done) {
                 var campaigns = [0];
                 var bidRequest = BR.http({campaigns: campaigns});
 
                 var bid = {
                     price: 12345,
                     crid: 'bid.crid',
-                    ext: {
-                        'priority': 'bid.priority'
-                    }
                 };
                 var rbid = JSON.parse(JSON.stringify(bid));
                 rbid.impid = bidRequest.imp[0].id;
+                rbid.ext = {};
                 rbid.ext['external-id'] = campaigns[0];
+                rbid.ext.priority = 1;
                 rbid.id = `${bidRequest.id}:${rbid.impid}:${rbid.ext['external-id']}`;
 
                 var cb = sinon.stub().returns(bid);
                 bidder.bid(cb);
-
                 post(bidRequest, function(res) {
                     expect(res.statusCode).to.equal(200);
                     expect(JSON.parse(res.data))
