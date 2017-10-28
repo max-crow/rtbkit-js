@@ -1,6 +1,18 @@
 
 # Changelog
 
+## v0.3.0 (2017-10-28)  
+### Added
+#### AdServer API (Post-Auction Loop)
+* rtbkit.adserver.win(data)
+
+### Fixed
+* bid.ext.priority's default value of 1
+
+#### Examples
+* nurl-proxy.js - An HTTP Proxy that converts HTTP post-auction GET requests into the RTBkit's [Standard Ad Server Protocol]
+
+
 ## v0.2.0 (2017-06-29)  
 ### Added
 #### HTTP Bidding Agent
@@ -49,3 +61,4 @@
 [Chai]: http://chaijs.com/
 [Sinon.JS]: http://sinonjs.org/
 [Sinon-Chai]: https://github.com/domenic/sinon-chai
+[Standard Ad Server Protocol]: https://github.com/rtbkit/rtbkit/wiki/Standard-Ad-Server-Protocol

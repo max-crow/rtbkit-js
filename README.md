@@ -100,7 +100,7 @@ var childrens = await account.children(); // gets descendants of the account
 await account.close(); // closes the account and all its childs.
 ```
 
-#### Agent Configuration Service (ACS) API
+### Agent Configuration Service (ACS) API
 ```js
 var agents = await acs.agents(); // lists all agents
 var agent = acs.agent(agents[0]);   // makes a reference to the specified agent. 
@@ -108,12 +108,50 @@ var agent = acs.agent(agents[0]);   // makes a reference to the specified agent.
 var config = await agent.config();  //gets the bidding agent's config
 await agent.config(newAgentConfig); // sets the new configuration for the bidding agent
 ```
+
+### Post Auction Events (a-ka [Standard Ad Server Protocol])
+With the Ad Server protocol we may implement a win notification proxy that recieves GET requests 
+from the browser and sends POST requests into the RTBkit's via Standard Ad Server Protocol:
+
+```js
+const app = require('express')();
+const rtbkit = require('rtbkit-js');
+
+const PORT = 888;
+
+const RTBKIT_HOST = '127.0.0.1';
+
+const adserver = rtbkit.instance(RTBKIT_HOST).adserver;
+
+app.get('/win', function (req, response) {
+    var data = {
+        timestamp: Date.now() / 1000,
+        bidRequestId: req.query.brid,
+        impid: req.query.impid,
+        price: parseFloat(req.query.price)
+    };
+
+    adserver.win(data, function(res) {
+        console.log(`win notice (${res.statusCode}): '${JSON.stringify(data)}'`);
+        response.status(res.statusCode).end();
+    }).on('error', function(err) {
+        console.log(`win notice error '${err.message}': '${JSON.stringify(data)}'`);
+        response.status(500).end();
+    });
+});
+
+
+app.listen(PORT, function(){
+    console.log(`nurl proxy server listing on: http://localhost:${PORT}`);
+});
+
+```
+
+Other events (clicks, conversions) will be implemented later.  
+
+
 #### Exchange Endoints
 Will be implemented later.  Will help to send bid requsts into the system and check responses.
-#### Post Auction Events
-Will be implemented later.  Will help to send post-auction events (win notifications, clicks, conversions).
-#### Bidding Agents
-A framework to create JavaScript-based [HTTP Bidding Agents]   Will be implemented later. 
 
 ### RTBkit Mock-up 
 There is a mock server that emulates all implemented APIs. It starts locally always.
@@ -145,3 +183,4 @@ main().then(res => {
 [async]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/async_function
 [Banker API]: https://github.com/rtbkit/rtbkit/wiki/Banker-JSON-API
 [HTTP Bidding Agents]: https://github.com/rtbkit/rtbkit/wiki/HttpBidderInterface
+[Standard Ad Server Protocol]: https://github.com/rtbkit/rtbkit/wiki/Standard-Ad-Server-Protocol
