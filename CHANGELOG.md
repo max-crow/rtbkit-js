@@ -1,6 +1,11 @@
 
 # Changelog
 
+## v0.3.1 (2017-10-28)  
+### Fixed
+* version in the npm package.json
+
+
 ## v0.3.0 (2017-10-28)  
 ### Added
 #### AdServer API (Post-Auction Loop)
