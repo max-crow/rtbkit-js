@@ -110,7 +110,7 @@ await agent.config(newAgentConfig); // sets the new configuration for the biddin
 ```
 
 ### Post Auction Events (a-ka [Standard Ad Server Protocol])
-With the Ad Server protocol we may implement a win notification proxy that recieves GET requests 
+With the API we may implement a win notification proxy that recieves GET requests 
 from the browser and sends POST requests into the RTBkit's via Standard Ad Server Protocol:
 
 ```js
